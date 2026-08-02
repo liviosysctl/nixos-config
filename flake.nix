@@ -36,14 +36,14 @@
       ...
     }@inputs:
     {
-      nixosConfigurations.mercury = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.DEG-PC-01 = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
           inherit inputs;
-          vars = import ./hosts/mercury/variables.nix;
+          vars = import ./hosts/DEG-PC-01/variables.nix;
         };
         modules = [
-          ./hosts/mercury/configuration.nix
+          ./hosts/DEG-PC-01/configuration.nix
           inputs.lanzaboote.nixosModules.lanzaboote
           inputs.impermanence.nixosModules.impermanence
           inputs.nix-flatpak.nixosModules.nix-flatpak
@@ -53,36 +53,9 @@
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = {
               inherit inputs;
-              vars = import ./hosts/mercury/variables.nix;
+              vars = import ./hosts/DEG-PC-01/variables.nix;
             };
-            home-manager.users.timeon = import ./modules/home/default.nix;
-            home-manager.sharedModules = [
-              nixvim.homeModules.nixvim
-            ];
-          }
-        ];
-      };
-
-      nixosConfigurations.phobos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {
-          inherit inputs;
-          vars = import ./hosts/phobos/variables.nix;
-        };
-        modules = [
-          ./hosts/phobos/configuration.nix
-          inputs.lanzaboote.nixosModules.lanzaboote
-          inputs.impermanence.nixosModules.impermanence
-          inputs.nix-flatpak.nixosModules.nix-flatpak
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              inherit inputs;
-              vars = import ./hosts/phobos/variables.nix;
-            };
-            home-manager.users.timeon = import ./modules/home/default.nix;
+            home-manager.users.livio = import ./modules/home/default.nix;
             home-manager.sharedModules = [
               nixvim.homeModules.nixvim
             ];

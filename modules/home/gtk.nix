@@ -50,7 +50,6 @@ in
         "file://${config.home.homeDirectory}/pictures"
         "file://${config.home.homeDirectory}/videos"
         "file://${config.home.homeDirectory}/documents"
-        "file://${config.home.homeDirectory}/developer"
       ];
 
       extraConfig = {

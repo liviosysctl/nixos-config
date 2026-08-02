@@ -1,4 +1,4 @@
-{ vars, ... }:
+{ vars, config, ... }:
 
 {
   imports = [
@@ -19,8 +19,17 @@
   # ── Host-specific: Networking ──────────────────────────────────
   networking.hostName = vars.hostName;
 
-  # ── Host-specific: GPU (AMD) ───────────────────────────────────
-  boot.initrd.kernelModules = [ "amdgpu" ];
+  # ── Host-specific: GPU (Nvidia) ───────────────────────────────────
+  services.xserver.videoDrivers=[ "nvidia" ];
+  boot.kernelParams = [ "nvidia_drm.modset=1" "nvidia_drm.fbdev=1" ];
+  hardware.nvidia = {
+	nvidiaSettings = true;
+	open = true;
+	powerManagement.enable = false;
+	powerManagement.finegrained = false;
+	package =
+  config.boot.kernelPackages.nvidiaPackages.production;
+	};
 
   # ── Host-specific: Kernel module blacklist (IEM drivers) ───────
   boot.blacklistedKernelModules = [
@@ -35,7 +44,5 @@
   };
 
   # ── Host-specific: Mount points ────────────────────────────────
-  systemd.tmpfiles.rules = [
-    "d /mnt/renegade 0755 timeon users -"
-  ];
+
 }

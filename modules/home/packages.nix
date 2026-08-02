@@ -22,8 +22,11 @@
         jdk25
       ];
     })
+    obsidian
     qbittorrent
     proton-vpn
+    protonmail-desktop
+    rclone
     jellyfin-desktop
     fuzzel # Clipboard selector
     trayscale

@@ -1,6 +1,6 @@
 { pkgs, vars, ... }:
 {
-  users.users.timeon = {
+  users.users.livio = {
     isNormalUser = true;
     description = vars.username;
     extraGroups = [

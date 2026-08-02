@@ -2,8 +2,8 @@
 {
   wayland.windowManager.hyprland.settings = {
     input = {
-      kb_layout = "eu";
-      kb_variant = "";
+      kb_layout = "ch";
+      kb_variant = "de_nodeadkeys";
       kb_model = "";
       kb_options = "";
       kb_rules = "";
