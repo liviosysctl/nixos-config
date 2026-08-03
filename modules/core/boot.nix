@@ -2,6 +2,7 @@
   pkgs,
   lib,
   vars,
+  config,
   ...
 }:
 
@@ -10,15 +11,32 @@
     kernelPackages = pkgs.linuxPackages_latest;
 
     # ── Bootloader ───────────────────────────────────────────────
+    # GRUB ist aktiv, solange secureBoot = false.
+    # Bei secureBoot = true übernimmt lanzaboote (systemd-boot-basiert);
+    # GRUB und lanzaboote schliessen sich gegenseitig aus.
     loader = {
-      systemd-boot = {
+      grub = {
         enable = !vars.secureBoot;
+        device = "nodev"; # EFI: GRUB wird in die ESP installiert
+        efiSupport = true;
+        useOSProber = true; # findet den Windows Boot Manager
         configurationLimit = 20;
-        consoleMode = "max";
-        editor = false;
+
+        minegrub-world-sel = {
+          enable = true;
+          customIcons = with config.system; [
+            {
+              inherit name;
+              lineTop = with nixos; "${distroName} ${codeName} (${version})";
+              lineBottom = "Survival Mode, No Cheats, Version: ${nixos.release}";
+              imgName = "nixos";
+            }
+          ];
+        };
       };
+
       efi.canTouchEfiVariables = true;
-      timeout = 3;
+      timeout = 10;
     };
 
     lanzaboote = lib.mkIf vars.secureBoot or false {

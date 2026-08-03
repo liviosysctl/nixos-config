@@ -22,6 +22,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    minegrub-world-sel-theme = {
+      url = "github:Lxtharia/minegrub-world-sel-theme";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     hypr-bucket.url = "github:Time-0N/hypr-bucket";
     zen-browser.url = "github:youwen5/zen-browser-flake";
     gazelle.url = "github:Zeus-Deus/gazelle-tui";
@@ -47,6 +52,7 @@
           inputs.lanzaboote.nixosModules.lanzaboote
           inputs.impermanence.nixosModules.impermanence
           inputs.nix-flatpak.nixosModules.nix-flatpak
+          inputs.minegrub-world-sel-theme.nixosModules.default
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

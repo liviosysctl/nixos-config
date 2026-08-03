@@ -3,7 +3,7 @@ let
   themeName = "catppuccin-mocha-blue";
 in
 {
-  home.packages = [ pkgs.supersonic-wayland ];
+  home.packages = [ pkgs.supersonic ];
 
   xdg.configFile."supersonic/themes/${themeName}.toml".text = ''
          
