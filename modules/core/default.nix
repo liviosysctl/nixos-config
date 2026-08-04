@@ -20,6 +20,7 @@
     ./programs.nix
     ./users.nix
     ./nix.nix
+    ./nix-ld.nix
     ./flatpak.nix
     ./keyring.nix
   ];

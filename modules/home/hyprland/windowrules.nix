@@ -24,6 +24,7 @@
       # Opacity
       "match:class ^(thunar|nemo)$, opacity 0.92"
       "match:class ^(discord|armcord|webcord)$, opacity 0.96"
+      "match:class ^(dev.zed.Zed)$, opacity 0.85"
       "match:title ^(QQ|Telegram)$, opacity 0.95"
       "match:title ^(NetEase Cloud Music Gtk4)$, opacity 0.95"
 
