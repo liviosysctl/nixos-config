@@ -27,6 +27,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    pixie-sddm.url = "github:xCaptaiN09/pixie-sddm";
+
     hypr-bucket.url = "github:Time-0N/hypr-bucket";
     zen-browser.url = "github:youwen5/zen-browser-flake";
     gazelle.url = "github:Zeus-Deus/gazelle-tui";
