@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 let
   autoPrimaryScript = pkgs.writeShellScriptBin "hypr-auto-primary" ''
     # Wait for XWayland to report a connected output
@@ -41,7 +41,15 @@ in
 {
   home.packages = [ autoPrimaryScript ];
 
-  wayland.windowManager.hyprland.settings = {
-    exec-once = [ "${autoPrimaryScript}/bin/hypr-auto-primary" ];
-  };
+  wayland.windowManager.hyprland.settings.on = [
+    {
+      _args = [
+        "hyprland.start"
+        (lib.generators.mkLuaInline ''
+          function()
+            hl.exec_cmd([[${autoPrimaryScript}/bin/hypr-auto-primary]])
+          end'')
+      ];
+    }
+  ];
 }

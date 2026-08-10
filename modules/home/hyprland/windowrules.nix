@@ -1,91 +1,372 @@
-{ ... }:
+{ lib, ... }:
+let
+  # Waybar's frosting, as a reusable pair of layer rules.
+  #
+  # There is only one blur on this desktop: `decoration:blur` in
+  # decorations.nix, which the compositor applies to whatever is behind a
+  # surface. A layer opts into it with `blur on`, and `ignore_alpha` says how
+  # opaque a pixel has to be before it is worth blurring behind — 0.5 is the
+  # number waybar has always run, and every translucent panel here uses it so
+  # they all frost identically. Nothing may set its own thresholds: a panel
+  # that looks different from waybar should differ in what it paints, not in
+  # how the compositor blurs it.
+  #
+  # `popups` extends the same rules to xdg popups parented to the layer.
+  # Waybar never needed it (its tooltips are opaque); the quickshell cards are
+  # popup surfaces and would otherwise come out unfrosted while the bar they
+  # hang off is not.
+  waybarBlur =
+    {
+      namespace,
+      popups ? false,
+    }:
+    [
+      (
+        {
+          name = "${namespace}-blur";
+          match.namespace = "^(${namespace})$";
+          blur = true;
+        }
+        // lib.optionalAttrs popups { blur_popups = true; }
+      )
+      {
+        name = "${namespace}-alpha";
+        match.namespace = "^(${namespace})$";
+        ignore_alpha = 0.5;
+      }
+    ];
+in
 {
   wayland.windowManager.hyprland.settings = {
+    config = {
+      general.border_size = 2;
 
-    general = {
-      border_size = 2;
+      # XWayland scaling fix
+      xwayland.force_zero_scaling = true;
     };
 
-    # Window Rules (v2)
-    windowrule = [
+    # `windowrule = "match:class ^foo$, float on"` became a table with a
+    # nested `match` set and the effects as sibling keys. Rules take a `name`
+    # so they can be referenced and toggled later.
+    window_rule = [
       # Float necessary windows
-      "match:class ^(org.pulseaudio.pavucontrol)$, float on"
-      "match:class ^$, match:title ^(Picture in picture)$, float on"
-      "match:class ^$, match:title ^(Save File)$, float on"
-      "match:class ^$, match:title ^(Open File)$, float on"
-      "match:class ^(LibreWolf)$, match:title ^(Picture-in-Picture)$, float on"
-      "match:class ^(blueman-manager)$, float on"
-      "match:class ^(xdg-desktop-portal-gtk|xdg-desktop-portal-kde|xdg-desktop-portal-hyprland)(.*)$, float on"
-      "match:class ^(polkit-gnome-authentication-agent-1|hyprpolkitagent|org.org.kde.polkit-kde-authentication-agent-1)(.*)$, float on"
-      "match:class ^(CachyOSHello)$, float on"
-      "match:class ^(zenity)$, float on"
-      "match:class ^$, match:title ^(Steam - Self Updater)$, float on"
-
+      {
+        name = "float-pavucontrol";
+        match = {
+          class = "^(org.pulseaudio.pavucontrol)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-pip-blank";
+        match = {
+          class = "^$";
+          title = "^(Picture in picture)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-save-file";
+        match = {
+          class = "^$";
+          title = "^(Save File)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-open-file";
+        match = {
+          class = "^$";
+          title = "^(Open File)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-librewolf-pip";
+        match = {
+          class = "^(LibreWolf)$";
+          title = "^(Picture-in-Picture)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-blueman";
+        match = {
+          class = "^(blueman-manager)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-portals";
+        match = {
+          class = "^(xdg-desktop-portal-gtk|xdg-desktop-portal-kde|xdg-desktop-portal-hyprland)(.*)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-polkit";
+        match = {
+          class = "^(polkit-gnome-authentication-agent-1|hyprpolkitagent|org.org.kde.polkit-kde-authentication-agent-1)(.*)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-cachyos-hello";
+        match = {
+          class = "^(CachyOSHello)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-zenity";
+        match = {
+          class = "^(zenity)$";
+        };
+        float = true;
+      }
+      {
+        name = "float-steam-updater";
+        match = {
+          class = "^$";
+          title = "^(Steam - Self Updater)$";
+        };
+        float = true;
+      }
       # Opacity
+<<<<<<< HEAD
       "match:class ^(thunar|nemo)$, opacity 0.92"
       "match:class ^(discord|armcord|webcord)$, opacity 0.96"
       "match:class ^(dev.zed.Zed)$, opacity 0.85"
       "match:title ^(QQ|Telegram)$, opacity 0.95"
       "match:title ^(NetEase Cloud Music Gtk4)$, opacity 0.95"
 
+=======
+      {
+        name = "opacity-filemanagers";
+        match = {
+          class = "^(thunar|nemo)$";
+        };
+        opacity = 0.92;
+      }
+      {
+        name = "opacity-discord";
+        match = {
+          class = "^(discord|armcord|webcord)$";
+        };
+        opacity = 0.96;
+      }
+      {
+        name = "opacity-chat";
+        match = {
+          title = "^(QQ|Telegram)$";
+        };
+        opacity = 0.95;
+      }
+      {
+        name = "opacity-netease";
+        match = {
+          title = "^(NetEase Cloud Music Gtk4)$";
+        };
+        opacity = 0.95;
+      }
+>>>>>>> 329bf83 (feat(hyprland) migration to lua)
       # Picture-in-Picture
-      "match:title ^(Picture-in-Picture)$, float on"
-      "match:title ^(Picture-in-Picture)$, size 960 540"
-      "match:title ^(Picture-in-Picture)$, move ((monitor_w*0.75)-window_w) 0"
-
+      {
+        name = "pip-float";
+        match = {
+          title = "^(Picture-in-Picture)$";
+        };
+        float = true;
+      }
+      {
+        name = "pip-size";
+        match = {
+          title = "^(Picture-in-Picture)$";
+        };
+        size = "960 540";
+      }
+      {
+        name = "pip-move";
+        match = {
+          title = "^(Picture-in-Picture)$";
+        };
+        move = "((monitor_w*0.75)-window_w) 0";
+      }
       # Floating media windows
-      "match:title ^(danmufloat)$, pin on"
-      "match:title ^(danmufloat|termfloat)$, rounding 5"
-
+      {
+        name = "danmufloat-pin";
+        match = {
+          title = "^(danmufloat)$";
+        };
+        pin = true;
+      }
+      {
+        name = "mediafloat-rounding";
+        match = {
+          title = "^(danmufloat|termfloat)$";
+        };
+        rounding = 5;
+      }
       # Animations
-      "match:class ^(kitty|Alacritty)$, animation slide right"
-      "match:class ^(org.mozilla.firefox)$, no_blur on"
-
+      {
+        name = "terminal-slide";
+        match = {
+          class = "^(kitty|Alacritty)$";
+        };
+        animation = "slide right";
+      }
+      {
+        name = "firefox-no-blur";
+        match = {
+          class = "^(org.mozilla.firefox)$";
+        };
+        no_blur = true;
+      }
       # Floating windows on workspaces 1-10
-      "match:float true, match:workspace w[fv1-10], border_size 2"
-      "match:float true, match:workspace w[fv1-10], rounding 8"
-
+      {
+        name = "floating-ws-border";
+        match = {
+          float = true;
+          workspace = "w[fv1-10]";
+        };
+        border_size = 2;
+      }
+      {
+        name = "floating-ws-rounding";
+        match = {
+          float = true;
+          workspace = "w[fv1-10]";
+        };
+        rounding = 8;
+      }
       # Tiling windows on workspaces 1-10
-      "match:float false, match:workspace f[1-10], border_size 3"
-      "match:float false, match:workspace f[1-10], rounding 4"
-
+      {
+        name = "tiled-ws-border";
+        match = {
+          float = false;
+          workspace = "f[1-10]";
+        };
+        border_size = 3;
+      }
+      {
+        name = "tiled-ws-rounding";
+        match = {
+          float = false;
+          workspace = "f[1-10]";
+        };
+        rounding = 4;
+      }
       # Ignore maximize requests
-      "match:class .*, suppress_event maximize"
-
+      {
+        name = "suppress-maximize";
+        match = {
+          class = ".*";
+        };
+        suppress_event = "maximize";
+      }
       # XWayland dragging fix
-      "match:class ^$, match:title ^$, match:xwayland true, match:float true, match:fullscreen false, match:pin false, no_focus on"
-
+      {
+        name = "fix-xwayland-drags";
+        match = {
+          class = "^$";
+          title = "^$";
+          xwayland = true;
+          float = true;
+          fullscreen = false;
+          pin = false;
+        };
+        no_focus = true;
+      }
       # Gazelle TUI pop-up
-      "match:class ^(gazelle-network)$, float on"
-      "match:class ^(gazelle-network)$, center on"
-      "match:class ^(gazelle-network)$, size 800 800"
-
+      {
+        name = "gazelle-float";
+        match = {
+          class = "^(gazelle-network)$";
+        };
+        float = true;
+      }
+      {
+        name = "gazelle-center";
+        match = {
+          class = "^(gazelle-network)$";
+        };
+        center = true;
+      }
+      {
+        name = "gazelle-size";
+        match = {
+          class = "^(gazelle-network)$";
+        };
+        size = "800 800";
+      }
     ];
 
-    # Workspace Rules
-    workspace = [
-      "w[tv1-10], gapsout:5, gapsin:3"
-      "f[1], gapsout:5, gapsin:3"
+    workspace_rule = [
+      {
+        workspace = "w[tv1-10]";
+        gaps_out = 5;
+        gaps_in = 3;
+      }
+      {
+        workspace = "f[1]";
+        gaps_out = 5;
+        gaps_in = 3;
+      }
     ];
 
-    # Layer Rules
-    layerrule = [
-      "match:namespace ^(logout_dialog)$, animation slide top"
-      "match:namespace ^(waybar)$, animation slide down"
-      "match:namespace ^(wallpaper)$, animation fade 50%"
-
-      # Hyprbucket
-      "match:namespace ^(hyprbucket)$, blur on"
-      "match:namespace ^(hyprbucket)$, ignore_alpha 0.5"
-
-      # Waybar
-      "match:namespace ^(waybar)$, blur on"
-      "match:namespace ^(waybar)$, ignore_alpha 0.5"
-    ];
-
-    # XWayland scaling fix
-    xwayland = {
-      force_zero_scaling = true;
+    layer_rule = [
+      {
+        name = "logout-dialog-anim";
+        match = {
+          namespace = "^(logout_dialog)$";
+        };
+        animation = "slide top";
+      }
+      {
+        name = "waybar-anim";
+        match = {
+          namespace = "^(waybar)$";
+        };
+        animation = "slide down";
+      }
+      {
+        name = "wallpaper-anim";
+        match = {
+          namespace = "^(wallpaper)$";
+        };
+        animation = "fade 50%";
+      }
+      {
+        name = "qs-bar-anim";
+        match = {
+          namespace = "^(qs-bar)$";
+        };
+        animation = "slide down";
+      }
+      # The settings overlay fades rather than slides — it covers the whole
+      # output, and sliding a full-screen surface reads as the desktop moving.
+      {
+        name = "qs-settings-anim";
+        match = {
+          namespace = "^(qs-settings)$";
+        };
+        animation = "fade";
+      }
+    ]
+    # Everything translucent gets waybar's blur and nothing else. The
+    # quickshell namespaces are set by hand in shell.qml and
+    # settings/SettingsWindow.qml, because quickshell otherwise names every
+    # surface it opens "quickshell" and these rules would catch any other
+    # shell running alongside it.
+    ++ waybarBlur { namespace = "hyprbucket"; }
+    ++ waybarBlur { namespace = "waybar"; }
+    ++ waybarBlur {
+      namespace = "qs-bar";
+      popups = true;
+    }
+    ++ waybarBlur {
+      namespace = "qs-settings";
+      popups = true;
     };
   };
 }
