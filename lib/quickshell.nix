@@ -45,6 +45,17 @@ let
         export QML2_IMPORT_PATH="${qmlPath qtModules}''${QML2_IMPORT_PATH:+:$QML2_IMPORT_PATH}"
         export QT_PLUGIN_PATH="${pluginPath qtModules}''${QT_PLUGIN_PATH:+:$QT_PLUGIN_PATH}"
 
+        # Icon lookup needs a theme *name*, and the session-wide qt6ct sets
+        # none — QIcon::themeName() comes back empty, so every fromTheme()
+        # misses and tray menus render holes where their icons should be.
+        # gtk3 reads gtk-icon-theme-name, which modules/home/gtk.nix already
+        # owns, so the shell and every GTK app agree on one source of truth.
+        #
+        # Overriding the platform theme costs nothing here: a shell draws its
+        # own chrome in QML, so the icon theme is the only part of it that
+        # ever gets used.
+        export QT_QPA_PLATFORMTHEME=gtk3
+
         # A shell's own imports/ takes precedence, which is how shim modules
         # (SddmComponents, a Qt5-named QtGraphicalEffects, ...) override the
         # real ones.

@@ -15,6 +15,37 @@ let
       src = ../../qml/example-panel;
     };
 
+    bar = {
+      src = ../../qml/bar;
+      runtimeInputs = [
+        # media/: the visualiser shells out to cava.
+        pkgs.cava
+        # network/: netinfo.sh fills in the IPv4 details quickshell's
+        # Networking service does not expose, and detects active VPN tunnels
+        # from the interface list. nmcli only names them — the script runs
+        # fine without it, so this is not load-bearing for detection.
+        pkgs.bash
+        pkgs.jq
+        pkgs.iproute2
+        pkgs.networkmanager
+        # bluetooth/: btctl.sh covers pair and forget, which the Bluetooth
+        # service exposes no method for.
+        pkgs.bluez
+        # settings/: Displays applies monitor changes with `hyprctl eval`.
+        # It resolved from the ambient PATH before, which holds right up until
+        # the shell is started from somewhere that has not sourced the user
+        # profile — a systemd unit, say. Same derivation the compositor itself
+        # comes from, so this adds an edge and no closure.
+        pkgs.hyprland
+        # settings/: vrrcap.sh reads the DRM `vrr_capable` connector property
+        # to work out which outputs can do adaptive sync. Neither sysfs nor
+        # Hyprland's IPC exposes it, and drm_info is the smallest thing that
+        # reads the property table. Needs membership of the `video` group,
+        # which is what makes /dev/dri/card* openable.
+        pkgs.drm_info
+      ];
+    };
+
     # Extra Qt modules or runtime binaries go per-app, e.g.:
     # lockscreen = {
     #   src = ../../qml/lockscreen;
@@ -24,6 +55,11 @@ let
 in
 {
   home.packages = lib.mapAttrsToList (name: args: qs.mkApp ({ inherit name; } // args)) apps ++ [
-    (qs.mkDevRunner { inherit devRoot; })
+    # One dev runner serves every shell, so it needs the union of their
+    # runtime deps rather than any single app's.
+    (qs.mkDevRunner {
+      inherit devRoot;
+      runtimeInputs = lib.concatMap (args: args.runtimeInputs or [ ]) (lib.attrValues apps);
+    })
   ];
 }
