@@ -23,11 +23,25 @@ Scope {
     // pauses and release it only once one turns out to be a long one.
     property int lingerMs: 30000
 
-    // Which pipewire node to listen to — an application's node.name, or
-    // "auto" for the default sink's monitor. The monitor is everything the
-    // machine plays, so leaving it there lets a notification blip from another
-    // app jump the spectrum in the middle of a track.
-    property string source: "auto"
+    // Which pipewire node to listen to: the node.name of one application's
+    // output stream — "supersonic", "Zen", "spotify".
+    //
+    // **Empty means listen to nothing, and cava does not run.** There is no
+    // fallback to the default sink's monitor, deliberately. The monitor is
+    // every sound the machine makes, so a spectrum pointed at it visualises a
+    // Discord call, a notification blip and a video in another window exactly
+    // as readily as the track the widget claims to be showing. A visualiser
+    // that is honestly blank is better than one that is confidently wrong
+    // about what it is drawing.
+    //
+    // cava.sh still understands "auto" for anything that genuinely wants the
+    // whole machine; this component just will not ask for it on its own.
+    property string source: ""
+
+    // Nothing to bind to means nothing to draw. Kept separate from `active`
+    // so a caller can still express "playing" honestly while this reports
+    // that it has no stream to follow.
+    readonly property bool bound: root.source !== ""
 
     // Latest frame. Flat while inactive, so a stopped visualiser reads as
     // silence instead of freezing on whatever cava emitted last.
@@ -65,6 +79,9 @@ Scope {
         return new Array(root.bars).fill(0);
     }
 
+    onBoundChanged: if (!root.bound)
+        root.values = root.silence()
+
     onActiveChanged: {
         if (root.active) {
             linger.stop();
@@ -83,7 +100,10 @@ Scope {
     }
 
     Process {
-        running: (root.active || linger.running) && !root.restarting
+        // `bound` gates the process outright: without a stream to name there
+        // is nothing to start it against, and starting it anyway is precisely
+        // how it used to end up on the default monitor.
+        running: root.bound && (root.active || linger.running) && !root.restarting
         command: ["bash", root.scriptPath, root.source]
 
         stdout: SplitParser {
@@ -98,7 +118,7 @@ Scope {
                 // land after the reset in onActiveChanged. Without this
                 // guard they overwrite the silence and the visualiser
                 // freezes on the last frame before the pause.
-                if (!root.active)
+                if (!root.active || !root.bound)
                     return;
 
                 const fields = line.split(";");

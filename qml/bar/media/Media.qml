@@ -71,14 +71,30 @@ Scope {
         const bus = root.normalise((player.dbusName ?? "").replace(/^org\.mpris\.MediaPlayer2\./, "").replace(/\.instance.*$/, ""));
         const identity = root.normalise(player.identity);
 
+        // Exact before approximate. Containment is what lets an identity of
+        // "Mozilla zen" find a node called "Zen", and it has to stay — but it
+        // is also what would let a short name land on the wrong application
+        // entirely, and there is no fallback behind this any more to make that
+        // survivable. So an exact match anywhere in the list beats a
+        // containment match, whatever order pipewire happens to report them.
+        let loose = null;
+
         for (const node of Pipewire.nodes.values) {
             if (node.type !== PwNodeType.AudioOutStream)
                 continue;
+
             const name = root.normalise(node.name);
-            if (root.alike(name, bus) || root.alike(name, identity))
+            if (name === "")
+                continue;
+
+            if (name === bus || name === identity)
                 return node;
+
+            if (!loose && (root.alike(name, bus) || root.alike(name, identity)))
+                loose = node;
         }
-        return null;
+
+        return loose;
     }
 
     // What cava is pointed at. `node.name` rather than the object serial:

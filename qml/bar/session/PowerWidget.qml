@@ -52,9 +52,14 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
 
-        // Detached, not a Process: wlogout outlives the click and has no
-        // output worth collecting, and tying a modal session menu's
-        // lifetime to the bar would take it down with a shell reload.
-        onClicked: Quickshell.execDetached(["wlogout"])
+        // `session-menu`, not `wlogout` — the wrapper in
+        // modules/home/wlogout.nix pins the button count its stylesheet is
+        // drawn for. Calling wlogout directly gets the default 3-per-row grid
+        // and a theme built for a single strip.
+        //
+        // Detached, not a Process: it outlives the click and has no output
+        // worth collecting, and tying a modal session menu's lifetime to the
+        // bar would take it down with a shell reload.
+        onClicked: Quickshell.execDetached(["session-menu"])
     }
 }

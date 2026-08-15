@@ -295,11 +295,12 @@ ShellRoot {
         // source for as long as it is up.
         active: mediaState.player?.isPlaying ?? false
 
-        // Follow the player's own pipewire stream rather than the default
-        // sink's monitor, so the spectrum shows the track and not every other
-        // sound the machine makes. Falls back to the monitor when the player
-        // cannot be matched to a stream.
-        source: mediaState.streamName || "auto"
+        // The player's own pipewire stream, and nothing else. When the
+        // player cannot be matched to a stream this is empty, and Cava
+        // answers that by not running — see the note on its `source`. It used
+        // to fall back to the default sink's monitor, which is what put a
+        // Discord call on the spectrum while a track was playing.
+        source: mediaState.streamName
     }
 
     Variants {
