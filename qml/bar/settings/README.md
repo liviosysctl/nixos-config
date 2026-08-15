@@ -1,36 +1,79 @@
 # Settings
 
-The bar's gear, and the panel it opens: a centred glass window over a dimmed
-backdrop, with a sidebar of sections. Displays is the only section so far.
+The bar's  button, and the panel it opens: a centred glass window over a
+dimmed backdrop, with a sidebar of sections.
 
-Used from `../shell.qml`, which imports this directory (`import "settings"`)
-and wires two things:
+Used from `../shell.qml`, which imports this directory and each section's
+folder, then wires one shared state object per section plus one widget per
+bar:
 
 ```qml
-Displays { id: displayState }                              // shared, once
+Displays  { id: displayState }     // shared, once
+Wallpaper { id: wallpaperState }   // shared, once
 ...
-SettingsWidget { theme: root; displays: displayState }     // per bar
+SettingsWidget {                   // per bar
+    theme: barTheme
+    displays: displayState
+    wallpaper: wallpaperState
+}
 ```
 
-`Displays` sits at `ShellRoot` level so both screens' panels agree on what has
-been edited and what has been applied. `SettingsWidget` is per bar, which is
-what makes the panel open on the monitor whose gear you clicked.
+The state objects sit at `ShellRoot` level so both screens' panels agree on
+what has been edited and what has been applied — and, for `Wallpaper`, so
+there is one watcher on the state file rather than one per output.
+`SettingsWidget` is per bar, which is what makes the panel open on the monitor
+whose button you clicked.
 
-## Files
+## Layout
+
+```
+settings/
+├── SettingsWidget.qml    the bar pill, and the overlay it owns
+├── SettingsWindow.qml    backdrop, window chrome, sidebar, section routing
+├── common/               controls every section draws with
+├── displays/             the Displays section
+└── wallpaper/            the Wallpaper section — see its own README
+```
+
+One folder per section, because a section is never one file: it is a page, a
+non-visual state object, usually a helper or two, and sometimes a script. Flat,
+those interleave with the shared controls and with each other, and the only way
+to tell `MonitorDraft.qml` from `NumberField.qml` is to open both.
 
 | File | What it does |
 | --- | --- |
-| `SettingsWidget.qml` | The gear pill in the bar, and the overlay it owns |
+| `SettingsWidget.qml` | The  pill in the bar, and the overlay it owns |
 | `SettingsWindow.qml` | The overlay: backdrop, window chrome, sidebar, page routing |
-| `DisplaysPage.qml` | The page: layout canvas on top, selected output's settings below |
-| `MonitorCanvas.qml` | Outputs drawn to scale — click to select, drag to arrange |
-| `MonitorDraft.qml` | One output's live state and pending edits (non-visual) |
-| `Displays.qml` | Reads monitors, applies changes, rewrites `monitors.lua` |
-| `Select.qml` | Glass dropdown |
-| `Toggle.qml` | Glass switch — unused since VRR became a three-way choice, kept for the next section that wants one |
-| `NumberField.qml` | Integer field, for X/Y positions |
-| `Button.qml` | Glass push button |
-| `vrrcap.sh` | Which outputs can do adaptive sync, as `{"DP-2":true}` |
+| `common/Select.qml` | Glass dropdown |
+| `common/Toggle.qml` | Glass switch |
+| `common/Slider.qml` | Glass slider — reports on drag and on release separately |
+| `common/NumberField.qml` | Integer field, for X/Y positions |
+| `common/Button.qml` | Glass push button |
+| `displays/DisplaysPage.qml` | The page: layout canvas on top, selected output's settings below |
+| `displays/MonitorCanvas.qml` | Outputs drawn to scale — click to select, drag to arrange |
+| `displays/MonitorDraft.qml` | One output's live state and pending edits (non-visual) |
+| `displays/Displays.qml` | Reads monitors, applies changes, rewrites `monitors.lua` |
+| `displays/vrrcap.sh` | Which outputs can do adaptive sync, as `{"DP-2":true}` |
+| `wallpaper/*` | See `wallpaper/README.md` |
+
+## Adding a section
+
+One entry in `SettingsWindow.sections`, and nothing else:
+
+```qml
+{ id: "network", label: "Network", glyph: "󰤨", page: networkSection }
+```
+
+…where `networkSection` is a `Component` declared alongside the others in that
+file. The sidebar, the routing and the fallback-to-first all read from that one
+list, and the page rides along in it as a `Component` rather than living in a
+branch of the content `Loader`. It used to be an entry *and* a branch, which is
+exactly the kind of pair that drifts — the sidebar grows a row that routes
+nowhere and the panel goes blank.
+
+The `Loader` is inactive while the panel is closed and re-created when the
+section changes, so a page cannot keep polling behind a window nobody is
+looking at.
 
 ## Where draft state lives
 
@@ -76,9 +119,6 @@ Dragging gets you flush, typing gets you exact.
 
 A lone output is pinned to the origin — there is nothing to position it
 relative to, and Hyprland normalises the layout anyway.
-
-Adding a section is an entry in `SettingsWindow.sections` plus a branch in the
-content `Loader` — the sidebar and the routing both read from that one list.
 
 ## How monitor changes are applied
 
@@ -210,10 +250,10 @@ rather than sharing state — pick one.
 ## Blur
 
 The frosting is Hyprland's own `decoration:blur`, switched on for the
-`qs-settings` layer by `waybarBlur` in
+`qs-settings` layer by `frostedLayer` in
 `modules/home/hyprland/windowrules.nix` — the same `blur on` +
-`ignore_alpha 0.5` waybar runs. There is no QML blur effect here, and no
-threshold of this panel's own.
+`ignore_alpha 0.5` every translucent surface here runs. There is no QML blur
+effect here, and no threshold of this panel's own.
 
 Only the panel frosts; the desktop behind it is dimmed but stays sharp,
 because the two surfaces the overlay draws fall on opposite sides of that one
@@ -249,7 +289,10 @@ nothing at render time — the compositor was already blurring the layer.
 - **Panel size** — `width`/`height` of `frame` in `SettingsWindow.qml`. Capped
   so it does not sprawl on a 4K output, bounded so it still fits a small one.
 - **Backdrop dimming** — the backdrop `Rectangle`'s alpha. Keep it under 0.5:
-  past the blur threshold the whole desktop starts frosting, and the threshold
-  is shared with waybar and the bar, so it is not this panel's to move.
-- **Scale choices** — `scaleChoices` in `Displays.qml`.
-- **Colours** — all from `theme`, which `shell.qml` passes as its own root.
+  past the blur threshold the whole desktop starts frosting, and that
+  threshold is shared by every frosted layer, so it is not this panel's to
+  move.
+- **Scale choices** — `scaleChoices` in `displays/Displays.qml`.
+- **Colours** — all from `theme`, which is the live `Theme` object `shell.qml`
+  hands down. That means the panel follows the wallpaper along with the rest of
+  the bar; see `../theme/README.md`.

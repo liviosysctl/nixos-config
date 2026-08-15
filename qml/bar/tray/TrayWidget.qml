@@ -3,6 +3,8 @@ import Quickshell.Widgets
 import Quickshell.Services.SystemTray
 import QtQuick
 
+import "../theme"
+
 // The tray: one icon per background app that has registered a
 // StatusNotifierItem. Everything waybar's #tray does — activate, secondary
 // activate, scroll and the app's own right-click menu — wearing the same
@@ -18,7 +20,7 @@ Row {
     property var menuItem: null
     property var tipItem: null
 
-    spacing: 2
+    spacing: Math.round(2 * widget.theme.zoom)
 
     function showMenu(anchorItem, item) {
         if (widget.menuItem === item && menuPopup.visible) {
@@ -63,24 +65,36 @@ Row {
 
             readonly property bool current: menuPopup.visible && widget.menuItem === entry.modelData
 
-            implicitWidth: 26
-            implicitHeight: 26
+            implicitWidth: widget.theme.controlSize
+            implicitHeight: widget.theme.controlSize
             radius: widget.theme.pillRadius
-            color: pointer.containsMouse || entry.current ? Qt.rgba(widget.theme.fg.r, widget.theme.fg.g, widget.theme.fg.b, 0.12) : "transparent"
+            color: "transparent"
 
-            Behavior on color {
-                ColorAnimation {
-                    duration: 160
-                }
+            // Open state is a bloom in the bar's accent, not a fill. These are
+            // third-party icons in every possible colour and a rectangle
+            // behind one reads as a button stuck pressed in; light spilling
+            // from behind it does not.
+            Shine {
+                anchors.fill: parent
+                theme: widget.theme
+                active: entry.current
             }
 
             IconImage {
                 anchors.centerIn: parent
-                // waybar asks for 20; 18 leaves the hover pill a visible
-                // margin at this bar height.
-                implicitSize: 18
+                // waybar asks for 20; a little under that leaves the icon a
+                // visible margin inside its slot.
+                implicitSize: Math.round(18 * widget.theme.zoom)
                 source: entry.modelData.icon
                 asynchronous: true
+                scale: pointer.containsMouse ? 1.15 : 1
+
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: 220
+                        easing.type: Easing.OutCubic
+                    }
+                }
             }
 
             // Apps that want attention say so through the SNI status, and it
@@ -88,10 +102,10 @@ Row {
             Rectangle {
                 anchors.right: parent.right
                 anchors.top: parent.top
-                anchors.margins: 3
-                implicitWidth: 6
-                implicitHeight: 6
-                radius: 3
+                anchors.margins: Math.round(3 * widget.theme.zoom)
+                implicitWidth: Math.round(6 * widget.theme.zoom)
+                implicitHeight: Math.round(6 * widget.theme.zoom)
+                radius: Math.round(3 * widget.theme.zoom)
                 color: widget.theme.bad
                 visible: entry.modelData.status === Status.NeedsAttention
             }

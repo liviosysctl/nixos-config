@@ -2,6 +2,8 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 
+import "../theme"
+
 // Two glyphs in the bar — network and bluetooth — sharing one panel between
 // them. Clicking either opens the same card on that glyph's tab, which is how
 // the original ties the two together.
@@ -12,7 +14,7 @@ Row {
     required property var net
     required property var bt
 
-    spacing: 2
+    spacing: Math.round(2 * widget.theme.zoom)
 
     function show(mode) {
         if (popup.visible && cardItem.mode === mode) {
@@ -35,39 +37,44 @@ Row {
         readonly property bool current: popup.visible && cardItem.mode === button.target
 
         visible: button.shown
-        implicitWidth: buttonRow.implicitWidth + 14
-        implicitHeight: 24
+        implicitWidth: buttonRow.implicitWidth + Math.round(14 * widget.theme.zoom)
+        implicitHeight: Math.round(24 * widget.theme.zoom)
         radius: height / 2
-        color: buttonHover.containsMouse || button.current ? Qt.rgba(widget.theme.accent.r, widget.theme.accent.g, widget.theme.accent.b, 0.16) : "transparent"
+        color: "transparent"
 
-        Behavior on color {
-            ColorAnimation {
-                duration: 120
-            }
+        // Open state is a bloom rather than a fill — hover is already
+        // answered by the glyphs themselves, and a rectangle here would be a
+        // pane inside a pane.
+        Shine {
+            anchors.fill: parent
+            theme: widget.theme
+            active: button.current
         }
 
         RowLayout {
             id: buttonRow
 
             anchors.centerIn: parent
-            spacing: 5
+            spacing: Math.round(5 * widget.theme.zoom)
 
-            Text {
+            PulseText {
                 Layout.alignment: Qt.AlignVCenter
+                theme: widget.theme
                 text: button.glyph
-                font.family: widget.theme.fontFamily
-                font.bold: widget.theme.fontBold
-                font.pixelSize: 14
-                color: button.lit ? widget.theme.fg : widget.theme.dim
+                font.pixelSize: widget.theme.glyphSize
+                lit: buttonHover.containsMouse
+                color: buttonHover.containsMouse ? widget.theme.hover : (button.lit ? widget.theme.fg : widget.theme.dim)
+                glowColor: widget.theme.hover
             }
 
-            Text {
+            PulseText {
                 Layout.alignment: Qt.AlignVCenter
+                theme: widget.theme
                 text: button.label
-                font.family: widget.theme.fontFamily
-                font.bold: widget.theme.fontBold
-                font.pixelSize: 12
-                color: widget.theme.dim
+                font.pixelSize: widget.theme.smallFontSize
+                lit: buttonHover.containsMouse
+                color: buttonHover.containsMouse ? widget.theme.hover : widget.theme.dim
+                glowColor: widget.theme.hover
                 visible: button.label !== ""
             }
         }

@@ -12,34 +12,55 @@ Rectangle {
     required property var media
     required property var cava
 
+    // The nix logo's accent, handed down from shell.qml. It cannot be read
+    // off `theme`: this widget runs on the *fixed* palette so its own colours
+    // stay out of the wallpaper's way, and this one colour has to come from
+    // the live one to actually match the logo it is echoing.
+    required property color openAccent
+
     readonly property var player: widget.media.player
     readonly property bool expanded: popup.visible
 
     visible: widget.player !== null
-    implicitWidth: row.implicitWidth + 18
-    implicitHeight: 24
+    implicitWidth: row.implicitWidth + Math.round(18 * widget.theme.zoom)
+    implicitHeight: Math.round(24 * widget.theme.zoom)
     radius: height / 2
-    color: pointer.containsMouse || widget.expanded ? Qt.rgba(widget.media.accent.r, widget.media.accent.g, widget.media.accent.b, 0.16) : "transparent"
+    color: "transparent"
 
-    Behavior on color {
-        ColorAnimation {
-            duration: 120
-        }
-    }
+    // The one open-state exception on the bar. Everything else blooms; this
+    // recolours instead — the bars themselves are the widget, so pushing them
+    // towards a colour says "open" more directly than lighting the empty
+    // space around them would.
+    //
+    // The colour it moves towards is the nix logo's, which is the other thing
+    // on the bar wearing a deliberately-not-the-accent accent. Mixed rather
+    // than replaced, so the track's own colour is still in there and the
+    // spectrum does not stop being the cover art's.
+    readonly property color barColor: widget.expanded ? Qt.tint(widget.media.accent, Qt.rgba(widget.openAccent.r, widget.openAccent.g, widget.openAccent.b, 0.55)) : widget.media.accent
 
     RowLayout {
         id: row
 
         anchors.centerIn: parent
-        spacing: 8
+        spacing: Math.round(8 * widget.theme.zoom)
 
         Spectrum {
-            Layout.preferredHeight: 14
+            Layout.preferredHeight: Math.round(14 * widget.theme.zoom)
             Layout.alignment: Qt.AlignVCenter
             values: widget.cava.values
-            color: widget.media.accent
-            barWidth: 3
-            barSpacing: 2
+            // The hover cue, in place of a background: the bars lift rather
+            // than sitting in a wash of their own colour. Applied on top of
+            // `barColor`, so hovering an open player brightens the mixed
+            // colour instead of dropping back to the unmixed one.
+            color: pointer.containsMouse ? Qt.lighter(widget.barColor, 1.35) : widget.barColor
+            barWidth: Math.round(3 * widget.theme.zoom)
+            barSpacing: Math.round(2 * widget.theme.zoom)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: 250
+                }
+            }
         }
     }
 

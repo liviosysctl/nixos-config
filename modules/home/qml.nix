@@ -37,12 +37,30 @@ let
         # profile — a systemd unit, say. Same derivation the compositor itself
         # comes from, so this adds an edge and no closure.
         pkgs.hyprland
-        # settings/: vrrcap.sh reads the DRM `vrr_capable` connector property
-        # to work out which outputs can do adaptive sync. Neither sysfs nor
-        # Hyprland's IPC exposes it, and drm_info is the smallest thing that
-        # reads the property table. Needs membership of the `video` group,
-        # which is what makes /dev/dri/card* openable.
+        # settings/displays/: vrrcap.sh reads the DRM `vrr_capable` connector
+        # property to work out which outputs can do adaptive sync. Neither
+        # sysfs nor Hyprland's IPC exposes it, and drm_info is the smallest
+        # thing that reads the property table. Needs membership of the `video`
+        # group, which is what makes /dev/dri/card* openable.
         pkgs.drm_info
+        # settings/wallpaper/: applying is a restart of the slideshow unit,
+        # and "next wallpaper" is a SIGUSR1 to it. See
+        # modules/home/hyprland/wallpaper-slideshow.nix for why the shell asks
+        # systemd rather than driving awww itself.
+        #
+        # session/: also systemd-inhibit, which is what holds the idle lock.
+        pkgs.systemd
+        # session/: the idle lock's payload is `cat` on a pipe, so that the
+        # lock dies with the shell rather than outliving it. See Idle.qml —
+        # this is load-bearing, not incidental.
+        pkgs.coreutils
+        # session/: the nix glyph opens wlogout.
+        pkgs.wlogout
+        # system/: the cpu and memory readouts open btop in $TERMINAL, which
+        # modules/home/default.nix exports from `vars.terminal`. The readings
+        # themselves are /proc and need nothing.
+        pkgs.btop
+        pkgs.kitty
       ];
     };
 
@@ -52,9 +70,12 @@ let
     #   runtimeInputs = [ pkgs.procps pkgs.systemd ];
     # };
   };
+
+  # Bound so the bar's store path can be named again below, for its unit.
+  built = lib.mapAttrs (name: args: qs.mkApp ({ inherit name; } // args)) apps;
 in
 {
-  home.packages = lib.mapAttrsToList (name: args: qs.mkApp ({ inherit name; } // args)) apps ++ [
+  home.packages = lib.attrValues built ++ [
     # One dev runner serves every shell, so it needs the union of their
     # runtime deps rather than any single app's.
     (qs.mkDevRunner {
@@ -62,4 +83,30 @@ in
       runtimeInputs = lib.concatMap (args: args.runtimeInputs or [ ]) (lib.attrValues apps);
     })
   ];
+
+  # The bar, as a session service. This replaces the waybar unit that
+  # home-manager's own module used to provide, and is arranged the same way:
+  # pulled in by graphical-session.target, and also started by name from
+  # hyprland's autostart list.
+  #
+  # The environment is not this unit's problem. uwsm runs the session —
+  # wayland-wm@hyprland.desktop.service is what reaches
+  # graphical-session.target — so WAYLAND_DISPLAY and
+  # HYPRLAND_INSTANCE_SIGNATURE are already in the user manager by the time
+  # anything wanted by that target starts.
+  systemd.user.services.qs-bar = {
+    Unit = {
+      Description = "Quickshell bar";
+      After = "graphical-session.target";
+      PartOf = "graphical-session.target";
+    };
+    Service = {
+      ExecStart = "${built.bar}/bin/qs-bar";
+      # A bar that dies takes the clock, the tray and the settings panel with
+      # it, and there is nothing else to get them back from.
+      Restart = "always";
+      RestartSec = 3;
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 }

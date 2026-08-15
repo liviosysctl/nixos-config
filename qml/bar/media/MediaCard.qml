@@ -5,6 +5,8 @@ import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
 
+import "../theme"
+
 // The expanded view behind the bar pill: cover art, track details, a seek
 // bar and transport controls. Sized by its content so the PopupWindow
 // hosting it can just take its implicit size.
@@ -72,7 +74,12 @@ Item {
         implicitWidth: diameter
         implicitHeight: diameter
         radius: diameter / 2
-        color: hover.containsMouse ? Qt.rgba(card.accent.r, card.accent.g, card.accent.b, 0.2) : baseColor
+        // `baseColor` only. Hover used to add a fill here too, which is the
+        // same translucent-disc-on-hover the bar dropped — and the play
+        // button already wears a resting fill, so on that one the hover state
+        // was a slightly different disc on top of a disc. The glyph answers
+        // the pointer instead.
+        color: baseColor
 
         Behavior on color {
             ColorAnimation {
@@ -80,12 +87,15 @@ Item {
             }
         }
 
-        Text {
+        PulseText {
             anchors.centerIn: parent
+            theme: card.theme
             text: button.glyph
-            font.family: card.theme.fontFamily
             font.pixelSize: button.glyphSize
-            color: !button.enabled ? card.theme.dim : (button.highlighted ? card.accent : card.theme.fg)
+            font.bold: false
+            lit: hover.containsMouse && button.enabled
+            color: !button.enabled ? card.theme.dim : (hover.containsMouse ? card.theme.hover : (button.highlighted ? card.accent : card.theme.fg))
+            glowColor: card.theme.hover
         }
 
         MouseArea {

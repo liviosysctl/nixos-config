@@ -16,6 +16,13 @@ let
     qtsvg
     qt5compat
     qtmultimedia
+    # Formats qtbase does not carry, webp above all. The bar reads whatever
+    # the wallpaper happens to be — for the picker's thumbnails and for the
+    # palette it derives from it — and without this a .webp wallpaper loads
+    # as nothing at all: a blank thumbnail, and a ColorQuantizer with no
+    # colours to quantize. It contributes only plugins, so it is here for
+    # QT_PLUGIN_PATH rather than for the QML import path.
+    qtimageformats
   ];
 
   qmlPath = modules: lib.makeSearchPath "lib/qt-6/qml" modules;

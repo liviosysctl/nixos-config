@@ -3,10 +3,15 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Layouts
 
+// One folder per section, and the shared controls in their own.
+import "common"
+import "displays"
+import "wallpaper"
+
 // The settings overlay: a full-screen layer holding a dimmed backdrop and one
 // centred glass window, with a sidebar of sections down its left.
 //
-// One of these lives per bar, so it opens on the screen whose gear was
+// One of these lives per bar, so it opens on the screen whose button was
 // clicked rather than always on the primary. It is a layer surface rather
 // than a PopupWindow because it has to cover the whole output including the
 // bar itself, and because a popup cannot take keyboard focus the way the
@@ -16,20 +21,60 @@ PanelWindow {
 
     required property var theme
     required property var displays
+    required property var wallpaper
 
     property bool open: false
 
-    // Sections. Adding one is an entry here plus a case in the Loader below —
-    // the sidebar, the routing and the empty state all read from this list.
+    // Every section is one entry here and nothing else: the sidebar, the
+    // routing and the reset-on-close all read from this list, and the page
+    // itself rides along as a Component. Adding a section used to mean
+    // touching the list *and* a branch in the content Loader, which is
+    // precisely the kind of pair that drifts.
     readonly property var sections: [
         {
             id: "displays",
             label: "Displays",
-            glyph: "󰍹"
+            glyph: "󰍹",  // md-monitor
+            page: displaysSection
+        },
+        {
+            id: "wallpaper",
+            label: "Wallpaper",
+            glyph: "󰋯",  // md-image_multiple_outline
+            page: wallpaperSection
         }
     ]
 
     property string section: "displays"
+
+    // Falls back to the first section rather than to null, so a stale id
+    // cannot leave the content pane blank with the sidebar showing nothing
+    // selected.
+    readonly property var currentSection: overlay.sections.find(entry => entry.id === overlay.section) ?? overlay.sections[0]
+
+    // The pages. Declared here rather than inline in the Loader so each one
+    // can be named in `sections` above, and so they can read `overlay` and
+    // `dropdowns` straight out of scope instead of being handed six
+    // properties by the routing.
+    Component {
+        id: displaysSection
+
+        DisplaysPage {
+            theme: overlay.theme
+            displays: overlay.displays
+            popupLayer: dropdowns
+        }
+    }
+
+    Component {
+        id: wallpaperSection
+
+        WallpaperPage {
+            theme: overlay.theme
+            wallpaper: overlay.wallpaper
+            popupLayer: dropdowns
+        }
+    }
 
     // Own namespace so the compositor can blur and animate the overlay
     // separately from the bar; both are matched in
@@ -271,14 +316,10 @@ PanelWindow {
                     Layout.fillHeight: true
 
                     // Torn down on close so a page cannot keep polling behind
-                    // a window nobody is looking at.
-                    active: overlay.open && overlay.section === "displays"
-
-                    sourceComponent: DisplaysPage {
-                        theme: overlay.theme
-                        displays: overlay.displays
-                        popupLayer: dropdowns
-                    }
+                    // a window nobody is looking at. Switching sections tears
+                    // the old page down for the same reason.
+                    active: overlay.open
+                    sourceComponent: overlay.currentSection.page
                 }
             }
         }

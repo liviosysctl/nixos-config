@@ -14,7 +14,10 @@ Rectangle {
 
     signal edited(int value)
 
-    implicitWidth: 84
+    // Two of these plus the 8px between them come to exactly one Select's
+    // 168, because they share a column with Selects and a control column that
+    // is 8px wider on one row is not a column.
+    implicitWidth: 80
     implicitHeight: 32
     radius: 9
 

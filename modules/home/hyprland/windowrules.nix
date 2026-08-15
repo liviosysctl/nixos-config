@@ -1,21 +1,23 @@
 { lib, ... }:
 let
-  # Waybar's frosting, as a reusable pair of layer rules.
+  # Frosting, as a reusable pair of layer rules.
   #
   # There is only one blur on this desktop: `decoration:blur` in
   # decorations.nix, which the compositor applies to whatever is behind a
   # surface. A layer opts into it with `blur on`, and `ignore_alpha` says how
-  # opaque a pixel has to be before it is worth blurring behind — 0.5 is the
-  # number waybar has always run, and every translucent panel here uses it so
-  # they all frost identically. Nothing may set its own thresholds: a panel
-  # that looks different from waybar should differ in what it paints, not in
-  # how the compositor blurs it.
+  # opaque a pixel has to be before it is worth blurring behind. 0.5 is the
+  # threshold every translucent panel here runs, so they all frost
+  # identically. Nothing may set its own: a panel that should look different
+  # differs in what it paints, not in how the compositor blurs it.
   #
-  # `popups` extends the same rules to xdg popups parented to the layer.
-  # Waybar never needed it (its tooltips are opaque); the quickshell cards are
-  # popup surfaces and would otherwise come out unfrosted while the bar they
-  # hang off is not.
-  waybarBlur =
+  # That number is load-bearing on the shell side too — qml/bar/theme/Theme.qml
+  # keeps its island fill at or above it, and drops below it deliberately when
+  # a pane is meant to go unfrosted. It is tested per pixel, not per surface.
+  #
+  # `popups` extends the same rules to xdg popups parented to the layer. The
+  # quickshell cards are popup surfaces and would otherwise come out unfrosted
+  # while the bar they hang off is not.
+  frostedLayer =
     {
       namespace,
       popups ? false,
@@ -323,13 +325,6 @@ in
         animation = "slide top";
       }
       {
-        name = "waybar-anim";
-        match = {
-          namespace = "^(waybar)$";
-        };
-        animation = "slide down";
-      }
-      {
         name = "wallpaper-anim";
         match = {
           namespace = "^(wallpaper)$";
@@ -353,18 +348,17 @@ in
         animation = "fade";
       }
     ]
-    # Everything translucent gets waybar's blur and nothing else. The
-    # quickshell namespaces are set by hand in shell.qml and
+    # Everything translucent gets the blur and nothing else. The quickshell
+    # namespaces are set by hand in shell.qml and
     # settings/SettingsWindow.qml, because quickshell otherwise names every
     # surface it opens "quickshell" and these rules would catch any other
     # shell running alongside it.
-    ++ waybarBlur { namespace = "hyprbucket"; }
-    ++ waybarBlur { namespace = "waybar"; }
-    ++ waybarBlur {
+    ++ frostedLayer { namespace = "hyprbucket"; }
+    ++ frostedLayer {
       namespace = "qs-bar";
       popups = true;
     }
-    ++ waybarBlur {
+    ++ frostedLayer {
       namespace = "qs-settings";
       popups = true;
     };

@@ -17,11 +17,11 @@ in
     # Every bind is hl.bind(key, dispatcher, opts?). The old bind/bindm/bindel/
     # bindl variants collapse into the third options table.
     bind = [
-      # Reload waybar
+      # Reload the bar
       {
         _args = [
           "SUPER + SHIFT + B"
-          (mkLuaInline "hl.dsp.exec_cmd([[systemctl --user restart waybar]])")
+          (mkLuaInline "hl.dsp.exec_cmd([[systemctl --user restart qs-bar]])")
         ];
       }
 

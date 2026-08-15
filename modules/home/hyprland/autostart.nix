@@ -10,7 +10,11 @@ let
     "dbus-update-activation-environment --systemd &"
 
     # Services
-    "systemctl --user start waybar"
+    # The bar. Its unit is defined in modules/home/qml.nix and is already
+    # wanted by graphical-session.target, so this is belt-and-braces rather
+    # than the only thing bringing it up — but it is what makes "hyprland
+    # starts the bar" true where you would go looking for it.
+    "systemctl --user start qs-bar"
 
     # UI Components
     "awww-daemon"

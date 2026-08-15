@@ -3,6 +3,9 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 
+// Shared glass controls live one level up — see ../common.
+import "../common"
+
 // The Displays page, in two halves: the outputs laid out to scale up top, and
 // the settings for whichever one is selected underneath.
 //
@@ -76,6 +79,12 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
+        // Matching WallpaperPage. Without this the page sat flush against the
+        // sidebar divider on one side and the window edge on the other, so
+        // switching sections shifted every row sideways — and the controls,
+        // which right-align, were pinned hard against the frame with nothing
+        // between them and it.
+        anchors.margins: 18
         spacing: 12
 
         Text {
@@ -174,13 +183,26 @@ Item {
 
                 GridLayout {
                     Layout.fillWidth: true
+                    // Capped, and left-aligned under the heading. The labels
+                    // still take fillWidth so the controls line up in a column
+                    // rather than floating — but without a ceiling that column
+                    // is pinned to the far edge of a 940px panel, leaving a
+                    // short label like "Scale" the better part of 600px away
+                    // from the thing it names. Nothing reads as a pair at that
+                    // distance.
+                    //
+                    // 560 is set by the widest thing that has to fit on one
+                    // line: the VRR sub-label. Below about 520 it starts to
+                    // wrap.
+                    Layout.maximumWidth: 560
+                    Layout.alignment: Qt.AlignLeft
                     Layout.topMargin: 4
                     columns: 2
                     columnSpacing: 12
                     rowSpacing: 10
 
                     // Labels take Layout.fillWidth so the control column lands
-                    // against the pane's right edge rather than floating.
+                    // against the grid's right edge rather than floating.
                     Text {
                         Layout.fillWidth: true
                         text: "Resolution"
