@@ -354,6 +354,10 @@ in
     # surface it opens "quickshell" and these rules would catch any other
     # shell running alongside it.
     ++ frostedLayer { namespace = "hyprbucket"; }
+    # wlogout names its layer `logout_dialog`. Its stylesheet puts a scrim on
+    # `window` at 0.55 specifically so there is something above ignore_alpha
+    # here for the compositor to blur behind — see modules/home/wlogout.nix.
+    ++ frostedLayer { namespace = "logout_dialog"; }
     ++ frostedLayer {
       namespace = "qs-bar";
       popups = true;

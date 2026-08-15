@@ -15,6 +15,7 @@
     ./gtk.nix
     ./qt.nix
     ./qml.nix
+    ./wlogout.nix
     ./gazelle.nix
     ./hyprland
     ./starship.nix

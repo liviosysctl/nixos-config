@@ -50,7 +50,9 @@
     playerctl
     nwg-displays
     wlr-randr
-    wlogout
+    # wlogout is installed by programs.wlogout in ./wlogout.nix, which owns its
+    # layout and stylesheet too. Listing it here as well would work but would
+    # hide where it is actually configured.
     pavucontrol
     cava
     blueman

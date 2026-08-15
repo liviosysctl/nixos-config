@@ -56,7 +56,7 @@ in
       {
         _args = [
           "SUPER + SHIFT + M"
-          (mkLuaInline "hl.dsp.exec_cmd([[wlogout]])")
+          (mkLuaInline "hl.dsp.exec_cmd([[session-menu]])")
         ];
       }
 

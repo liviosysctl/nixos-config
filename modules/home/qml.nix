@@ -54,7 +54,10 @@ let
         # lock dies with the shell rather than outliving it. See Idle.qml —
         # this is load-bearing, not incidental.
         pkgs.coreutils
-        # session/: the nix glyph opens wlogout.
+        # session/: the nix glyph opens `session-menu`, the wlogout wrapper
+        # from modules/home/wlogout.nix. That is a home.packages entry rather
+        # than something referable from here, so it resolves off the ambient
+        # PATH — wlogout stays listed because it is what the wrapper execs.
         pkgs.wlogout
         # system/: the cpu and memory readouts open btop in $TERMINAL, which
         # modules/home/default.nix exports from `vars.terminal`. The readings
