@@ -5,7 +5,6 @@
   ...
 }:
 let
-  cursor-theme = import ../../lib/cursor.nix { inherit pkgs; };
 
   # Blank the greeter's displays after this long without input. Any key or
   # mouse movement wakes them back up. 0 would disable idling entirely.
@@ -46,22 +45,15 @@ in
     };
   };
 
-  environment.systemPackages = [ cursor-theme ];
 
   xdg.icons.fallbackCursorThemes = [ "MacOSX-Cursor" ];
 
   programs.qylock = {
     enable = true;
-    wayland.enable = true;
-    theme = "pixie";
-    package = pkgs.kdePackages.sddm;
+    theme = "pixel-hollowknight";
 
-    extraPackages = [
-      pkgs.kdePackages.qtsvg
-      pkgs.kdePackages.qtdeclarative
-      pkgs.kdePackages.qt5compat
-    ];
+    # Puts `qylock-lock` on PATH with QS_THEME defaulted to the theme above.
+    # Driven via the `lockscreen` wrapper in modules/home/hyprland/lockscreen.nix.
+    quickshell.enable = true;
   };
-
-  environment.systemPackages = [ pixieThemed ];
 }

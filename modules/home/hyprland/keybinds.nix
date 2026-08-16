@@ -26,19 +26,6 @@ in
       }
 
       # Keybinds
-<<<<<<< HEAD
-      "${mainMod}, RETURN, exec, ${terminal}"
-      "${mainMod}, Q, killactive"
-      "${mainMod} SHIFT, M, exec, wlogout"
-      "${mainMod}, E, exec, ${fileManager}"
-      "${mainMod}, V, togglefloating"
-      "${mainMod}, SPACE, exec, ${menu}"
-      "${mainMod}, F, fullscreen"
-      "${mainMod}, P, pseudo"
-      "${mainMod}, J, layoutmsg, togglesplit"
-      "${mainMod}, L, exec, hyprlock"
-      "${mainMod}, Tab, changegroupactive, f"
-=======
       {
         _args = [
           "SUPER + RETURN"
@@ -116,7 +103,6 @@ in
         ];
       }
 
->>>>>>> 329bf83 (feat(hyprland) migration to lua)
       # Screenshot
       {
         _args = [

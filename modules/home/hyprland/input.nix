@@ -1,15 +1,10 @@
 { ... }:
 {
   wayland.windowManager.hyprland.settings = {
-<<<<<<< HEAD
-    input = {
+
+    config.input = {
       kb_layout = "ch";
       kb_variant = "de_nodeadkeys";
-=======
-    config.input = {
-      kb_layout = "eu";
-      kb_variant = "";
->>>>>>> 329bf83 (feat(hyprland) migration to lua)
       kb_model = "";
       kb_options = "";
       kb_rules = "";

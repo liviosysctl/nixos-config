@@ -1,29 +1,18 @@
 { ... }:
 {
-<<<<<<< HEAD
-  wayland.windowManager.hyprland.settings = {
-    env = [
 
-      # NVIDIA
-      "LIBVA_DRIVER_NAME,nvidia"
-      "__GLX_VENDOR_LIBRARY_NAME,nvidia"
-      "NVD_BACKEND,direct"
-
-      # Cursor
-      "XCURSOR_THEME,WiiPointer"
-      "XCURSOR_SIZE,24"
-      "HYPRCURSOR_SIZE,24"
-      "QT_CURSOR_SIZE,24"
-=======
   # `env = "KEY,value"` became a two-argument hl.env("KEY", "value") call,
   # which is what the _args list produces.
   wayland.windowManager.hyprland.settings.env = [
     # Cursor
-    { _args = [ "XCURSOR_THEME" "MacOSX-Cursor" ]; }
+    { _args = [ "XCURSOR_THEME" "WiiPointer" ]; }
     { _args = [ "XCURSOR_SIZE" "24" ]; }
     { _args = [ "HYPRCURSOR_SIZE" "24" ]; }
     { _args = [ "QT_CURSOR_SIZE" "24" ]; }
->>>>>>> 329bf83 (feat(hyprland) migration to lua)
+
+    { _args = [ "LIBVA_DRIVER_NAME" "nvidia" ]; }
+    { _args = [ "__GLX_VENDOR_LIBRARY_NAME" "nvidia" ]; }
+    { _args = [ "NVD_BACKEND" "direct" ]; }
 
     # Session
     { _args = [ "XDG_SESSION_TYPE" "wayland" ]; }
