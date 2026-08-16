@@ -19,6 +19,6 @@
     "eww daemon"
 
     # Cursor
-    "hyprctl setcursor macOS 24"
+    "hyprctl setcursor WiiPointer 24"
   ];
 }

@@ -2,14 +2,14 @@
 {
   wayland.windowManager.hyprland.settings = {
     env = [
-      
+
       # NVIDIA
       "LIBVA_DRIVER_NAME,nvidia"
       "__GLX_VENDOR_LIBRARY_NAME,nvidia"
       "NVD_BACKEND,direct"
 
       # Cursor
-      "XCURSOR_THEME,macOS"
+      "XCURSOR_THEME,WiiPointer"
       "XCURSOR_SIZE,24"
       "HYPRCURSOR_SIZE,24"
       "QT_CURSOR_SIZE,24"

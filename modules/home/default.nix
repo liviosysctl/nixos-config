@@ -15,6 +15,7 @@
     ./gtk.nix
     ./qt.nix
     ./gazelle.nix
+    ./proton-drive.nix
     ./waybar
     ./hyprland
     ./starship.nix

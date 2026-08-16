@@ -3,15 +3,14 @@ let
   gtk-theme-name = "Colloid-Dark";
   gtk-theme = pkgs.colloid-gtk-theme;
   icon-theme-name = "Papirus-Dark";
-  cursor-name = "MacOSX-Cursor";
+  cursor-name = "WiiPointer";
   cursor-theme = pkgs.stdenvNoCC.mkDerivation {
-    pname = "macosx-cursor-moyash";
+    pname = "wii-pointer-cursor";
     version = "1.0";
-    src = ../../assets/cursor/MacOSX-Cursor.zip;
-    nativeBuildInputs = [ pkgs.unzip ];
+    src = ../../assets/cursor/Wii-Pointer.tar.gz;
     installPhase = ''
-      mkdir -p $out/share/icons
-      cp -r . $out/share/icons/MacOSX-Cursor
+      mkdir -p $out/share/icons/WiiPointer
+      cp -r ./* $out/share/icons/WiiPointer/
     '';
   };
   cursor-size = 24;
@@ -40,7 +39,7 @@ in
 
     cursorTheme = {
       name = cursor-name;
-      package = pkgs.apple-cursor;
+      package = cursor-theme;
       size = cursor-size;
     };
 

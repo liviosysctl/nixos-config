@@ -14,30 +14,18 @@
     swayimg
     pinta
     gimp3-with-plugins
-    (prismlauncher.override {
-      jdks = [
-        jdk8
-        jdk17
-        jdk21
-        jdk25
-      ];
-    })
     obsidian
     qbittorrent
     proton-vpn
     protonmail-desktop
-    rclone
     jellyfin-desktop
     fuzzel # Clipboard selector
-    trayscale
     kid3
     feishin
-    clonehero
-    r2modman
+    modrinth-app
 
     # 3D
     #temp removed due to upstream test failure: freecad
-    openscad
     blender
 
     # Android dev
@@ -84,7 +72,6 @@
     ghc
 
     # Clanker tooling
-    opencode
     claude-code
 
     # Flake packages
