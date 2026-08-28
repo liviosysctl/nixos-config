@@ -3,8 +3,18 @@
 {
   programs.ssh = {
     enable = true;
-    matchBlocks."*".addKeysToAgent = "yes";
     enableDefaultConfig = false;
+
+    matchBlocks = {
+      "*".addKeysToAgent = "yes";
+
+      "github.com" = {
+        hostname = "github.com";
+        user = "git";
+        identityFile = "~/.ssh/github-sshkey";
+        identitiesOnly = true;
+      };
+    };
   };
 
   services.ssh-agent.enable = true;
