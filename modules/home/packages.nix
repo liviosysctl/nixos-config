@@ -6,7 +6,6 @@
     gnumake
     unzip
     nodejs
-
     # Desktop apps
     vesktop
     vlc
@@ -22,26 +21,21 @@
     fuzzel # Clipboard selector
     kid3
     feishin
-    modrinth-app
-
+    # modrinth-app is installed by ./modrinth.nix, wrapped to run under XWayland.
+    # The plain package dies at startup with "Error 71 (Protocol error)".
     # 3D
     #temp removed due to upstream test failure: freecad
     blender
-
     # Android dev
     android-tools
-
     # File managers
     yazi
-
     # Cli tools
     lsd
     ffmpeg
     flac
-
     # Monitoring
     btop
-
     # Wayland / Hyprland utilities
     grim
     slurp
@@ -58,24 +52,19 @@
     blueman
     ffmpegthumbnailer
     screen
-
     # Theming
     papirus-icon-theme
-
     # Wine and Proton
     wineWow64Packages.staging
     winetricks
     protonup-qt
-
     # Language runtimes
     rustc
     cargo
     python3
     ghc
-
     # Clanker tooling
     claude-code
-
     # Flake packages
     inputs.hypr-bucket.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];

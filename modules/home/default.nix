@@ -24,9 +24,9 @@
     ./nixvim
     ./spicetify.nix
     ./supersonic.nix
+    ./modrinth.nix
     ./zed.nix
   ];
-
   home.username = vars.username;
   home.homeDirectory = "/home/${vars.username}";
   home.sessionVariables = {
@@ -34,6 +34,5 @@
     TERMINAL = vars.terminal;
   };
   home.stateVersion = "24.11";
-
   programs.home-manager.enable = true;
 }
