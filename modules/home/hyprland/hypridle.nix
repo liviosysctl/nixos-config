@@ -10,7 +10,10 @@
 
     settings = {
       general = {
-        before_sleep_cmd = "sh -c 'pidof hyprlock || hyprlock'";
+        # `lockscreen`, not hyprlock directly — see hyprland/lockscreen.nix.
+        # The old `pidof hyprlock || hyprlock` guard is gone: the wrapper takes
+        # an flock, which covers the same race without having to name a process.
+        before_sleep_cmd = "lockscreen";
         after_sleep_cmd = "hyprctl dispatch dpms on && busctl --user set-property rs.wl-gammarelay / rs.wl.gammarelay Brightness d 1.0";
         # 0 would take no sleep inhibitor at all, so before_sleep_cmd is not
         # guaranteed to have painted before the machine goes down -- a lid close
@@ -30,7 +33,7 @@
         }
         {
           timeout = 300;
-          on-timeout = "hyprlock";
+          on-timeout = "lockscreen";
         }
         {
           timeout = 360;

@@ -32,7 +32,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    pixie-sddm.url = "github:xCaptaiN09/pixie-sddm";
+    silentSDDM = {
+      url = "github:uiriansan/SilentSDDM";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     hypr-bucket.url = "github:Time-0N/hypr-bucket";
     zen-browser.url = "github:youwen5/zen-browser-flake";

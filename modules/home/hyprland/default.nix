@@ -10,6 +10,7 @@
     ./hyprlock.nix
     ./input.nix
     ./keybinds.nix
+    ./lockscreen.nix
     ./windowrules.nix
     ./wallpaper-slideshow.nix
     ./xwayland-primary.nix
