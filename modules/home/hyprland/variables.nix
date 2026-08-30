@@ -1,6 +1,6 @@
 {
   mainMod = "SUPER";
-  terminal = "kitty";
+  terminal = "ghostty";
   fileManager = "nautilus";
   menu = "hbucket";
 }

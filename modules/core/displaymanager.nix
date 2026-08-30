@@ -50,7 +50,7 @@ in
 
   programs.qylock = {
     enable = true;
-    theme = "pixel-hollowknight";
+    theme = "Minecraft";
 
     # Puts `qylock-lock` on PATH with QS_THEME defaulted to the theme above.
     # Driven via the `lockscreen` wrapper in modules/home/hyprland/lockscreen.nix.

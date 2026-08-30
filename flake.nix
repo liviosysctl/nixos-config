@@ -8,9 +8,9 @@
     impermanence.url = "github:nix-community/impermanence";
 
     qylock = {
-          url = "github:Darkkal44/qylock";
-          inputs.nixpkgs.follows = "nixpkgs";
-        };
+      url = "github:Darkkal44/qylock";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.1.0";

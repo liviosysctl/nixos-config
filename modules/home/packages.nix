@@ -7,6 +7,7 @@
     unzip
     nodejs
     # Desktop apps
+    ghostty
     vesktop
     vlc
     evince
@@ -21,8 +22,6 @@
     fuzzel # Clipboard selector
     kid3
     feishin
-    # modrinth-app is installed by ./modrinth.nix, wrapped to run under XWayland.
-    # The plain package dies at startup with "Error 71 (Protocol error)".
     # 3D
     #temp removed due to upstream test failure: freecad
     blender

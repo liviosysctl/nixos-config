@@ -24,7 +24,6 @@
     ./nixvim
     ./spicetify.nix
     ./supersonic.nix
-    ./modrinth.nix
     ./zed.nix
   ];
   home.username = vars.username;
