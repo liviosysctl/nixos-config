@@ -20,6 +20,7 @@
     ./hyprland
     ./starship.nix
     ./kitty.nix
+    ./ghostty.nix
     ./zen-browser.nix
     ./nixvim
     ./spicetify.nix
