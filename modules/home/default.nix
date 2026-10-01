@@ -1,6 +1,7 @@
 { vars, ... }:
 {
   imports = [
+    ./prismlauncher.nix
     ./cliphist.nix
     ./direnv.nix
     ./nautilus.nix
@@ -23,6 +24,8 @@
     ./ghostty.nix
     ./zen-browser.nix
     ./nixvim
+    ./prismlauncher.nix
+    ./modrinth.nix
     ./spicetify.nix
     ./supersonic.nix
     ./zed.nix

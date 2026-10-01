@@ -2,8 +2,8 @@
   username = "livio";
   hostName = "DEG-PC-01";
 
-  gitUsername = "Livio-D";
-  gitEmail = "livio@deganutti.ch";
+  gitUsername = "<NEUER-USERNAME>";
+  gitEmail = "<NEUE-EMAIL>";
   gitGpgKey = ""; # Only activates when set! On new devices key needs to be re-generated. Generate -> "gpg --full-generate-key" Get ID -> "gpg --list-secret-keys --keyid-format=long" Export -> "gpg --armor --export <key-id>"
 
   timeZone = "Europe/Zurich";

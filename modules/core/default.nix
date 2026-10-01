@@ -11,6 +11,7 @@
     ./snapper.nix
     ./boot.nix
     ./displaymanager.nix
+    ./hyprland-custom-session.nix
     ./console.nix
     ./bluetooth.nix
     ./fonts.nix

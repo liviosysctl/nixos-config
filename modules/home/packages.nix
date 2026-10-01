@@ -7,6 +7,7 @@
     unzip
     nodejs
     # Desktop apps
+    prismlauncher
     ghostty
     vesktop
     vlc

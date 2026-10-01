@@ -1,6 +1,7 @@
 { lib, ... }:
 {
   imports = [
+    ./custom-config.nix
     ./animations.nix
     ./autostart.nix
     ./decorations.nix
