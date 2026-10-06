@@ -5,7 +5,7 @@
   # which is what the _args list produces.
   wayland.windowManager.hyprland.settings.env = [
     # Cursor
-    { _args = [ "XCURSOR_THEME" "WiiPointer" ]; }
+    { _args = [ "XCURSOR_THEME" "Bibata-Modern-Classic" ]; }
     { _args = [ "XCURSOR_SIZE" "24" ]; }
     { _args = [ "HYPRCURSOR_SIZE" "24" ]; }
     { _args = [ "QT_CURSOR_SIZE" "24" ]; }

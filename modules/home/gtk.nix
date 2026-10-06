@@ -3,16 +3,8 @@ let
   gtk-theme-name = "Colloid-Dark";
   gtk-theme = pkgs.colloid-gtk-theme;
   icon-theme-name = "Papirus-Dark";
-  cursor-name = "WiiPointer";
-  cursor-theme = pkgs.stdenvNoCC.mkDerivation {
-    pname = "wii-pointer-cursor";
-    version = "1.0";
-    src = ../../assets/cursor/Wii-Pointer.tar.gz;
-    installPhase = ''
-      mkdir -p $out/share/icons/WiiPointer
-      cp -r ./* $out/share/icons/WiiPointer/
-    '';
-  };
+  cursor-name = "Bibata-Modern-Classic";
+  cursor-theme = pkgs.bibata-cursors;
   cursor-size = 24;
 in
 {
@@ -84,5 +76,4 @@ in
     gtk.enable = true;
     x11.enable = true;
   };
-
 }
